@@ -1,18 +1,21 @@
 mod eth_wallet;
 use eth_wallet::gen_key;
 
-use crate::eth_wallet::pub_key_addr;
+use crate::eth_wallet::{pub_key_addr, Wallet};
 
 fn main() {
     let (sec_key, pub_key) = gen_key();
 
     println!(
-        "sec_key:    {:?}\npub_key:    {}",
-        sec_key,
+        "sec_key:    {}\npub_key:    {}",
+        sec_key.display_secret(),
         pub_key.to_string()
     );
 
     let pub_addr = pub_key_addr(&pub_key);
 
     print!("addr:    {:?}", pub_addr);
+
+    let wallet = Wallet::new(&sec_key, &pub_key);
+    println!("{:?}", wallet)
 }

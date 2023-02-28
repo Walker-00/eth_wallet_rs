@@ -5,12 +5,15 @@ use std::{
 };
 
 use anyhow::Result;
+use rand_jitter::JitterRng;
 use secp256k1::{
     rand::{rngs::StdRng, SeedableRng},
     PublicKey, Secp256k1, SecretKey,
 };
 use serde::{Deserialize, Serialize};
 use web3::{signing::keccak256, types::Address};
+
+use crate::utils::gen_systime;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Wallet {
@@ -21,7 +24,7 @@ pub struct Wallet {
 
 pub fn gen_key() -> (SecretKey, PublicKey) {
     let secp = Secp256k1::new();
-    let mut rng = StdRng::seed_from_u64(111);
+    let mut rng = JitterRng::new_with_timer(gen_systime());
     secp.generate_keypair(&mut rng)
 }
 

@@ -20,7 +20,10 @@ async fn main() -> Result<()> {
 
     let wallet = Wallet::new(&sec_key, &pub_key);
     println!("{:?}", wallet);
-    wallet.save_as_file("wallet.json").await?;
+    let path = "wallet.json";
+    wallet.save_as_file(path)?;
+
+    Wallet::load_file(path)?;
 
     Ok(())
 }

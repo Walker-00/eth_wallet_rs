@@ -1,4 +1,7 @@
-use std::{fs::OpenOptions, io::BufWriter};
+use std::{
+    fs::OpenOptions,
+    io::{BufReader, BufWriter},
+};
 
 use anyhow::Result;
 use secp256k1::{
@@ -40,11 +43,19 @@ impl Wallet {
         }
     }
 
-    pub async fn save_as_file(&self, path: &str) -> Result<()> {
+    pub fn save_as_file(&self, path: &str) -> Result<()> {
         let file = OpenOptions::new().write(true).create(true).open(path)?;
         let writer = BufWriter::new(file);
 
         serde_json::to_writer_pretty(writer, self)?;
         Ok(())
+    }
+
+    pub fn load_file(path: &str) -> Result<Wallet> {
+        let file = OpenOptions::new().read(true).open(path)?;
+        let reader = BufReader::new(file);
+
+        let wallet = serde_json::from_reader(reader)?;
+        Ok(wallet)
     }
 }

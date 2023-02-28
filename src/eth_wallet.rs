@@ -1,6 +1,7 @@
 use std::{
     fs::OpenOptions,
     io::{BufReader, BufWriter},
+    str::FromStr,
 };
 
 use anyhow::Result;
@@ -57,5 +58,15 @@ impl Wallet {
 
         let wallet = serde_json::from_reader(reader)?;
         Ok(wallet)
+    }
+
+    pub fn sec_key(&self) -> Result<SecretKey> {
+        let sec_key = SecretKey::from_str(&self.secret_key)?;
+        Ok(sec_key)
+    }
+
+    pub fn pub_key(&self) -> Result<PublicKey> {
+        let pub_key = PublicKey::from_str(&self.public_key)?;
+        Ok(pub_key)
     }
 }

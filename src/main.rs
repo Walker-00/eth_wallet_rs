@@ -1,4 +1,5 @@
 mod eth_wallet;
+mod utils;
 use anyhow::Result;
 use eth_wallet::gen_key;
 

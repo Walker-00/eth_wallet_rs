@@ -8,7 +8,6 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.69"
 dotenvy = "0.15.6"
-rand_jitter = "0.3.0"
 secp256k1 = { version = "0.26.0", features = ["rand"] }
 serde = { version = "1.0.152", features = ["derive"] }
 serde_json = "1.0.93"

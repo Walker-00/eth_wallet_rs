@@ -5,7 +5,6 @@ use std::{
 };
 
 use anyhow::Result;
-use rand_jitter::JitterRng;
 use secp256k1::{
     rand::{rngs::StdRng, SeedableRng},
     PublicKey, Secp256k1, SecretKey,
@@ -24,7 +23,7 @@ pub struct Wallet {
 
 pub fn gen_key() -> (SecretKey, PublicKey) {
     let secp = Secp256k1::new();
-    let mut rng = JitterRng::new_with_timer(gen_systime());
+    let mut rng = StdRng::seed_from_u64(gen_systime().unwrap());
     secp.generate_keypair(&mut rng)
 }
 

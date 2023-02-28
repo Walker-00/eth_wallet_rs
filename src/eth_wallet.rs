@@ -10,7 +10,12 @@ use secp256k1::{
     PublicKey, Secp256k1, SecretKey,
 };
 use serde::{Deserialize, Serialize};
-use web3::{signing::keccak256, types::Address};
+use web3::{
+    signing::keccak256,
+    transports::WebSocket,
+    types::{Address, U256},
+    Web3,
+};
 
 use crate::utils::gen_systime;
 
@@ -71,4 +76,15 @@ impl Wallet {
         let pub_key = PublicKey::from_str(&self.public_key)?;
         Ok(pub_key)
     }
+
+    pub async fn get_balance(&self, web3_conc: &Web3<WebSocket>) -> Result<U256> {
+        let wallet_addr = Address::from_str(&self.public_addr)?;
+        let balance = web3_conc.eth().balance(wallet_addr, None).await?;
+        Ok(balance)
+    }
+}
+
+pub async fn connect_web3(url: &str) -> Result<Web3<WebSocket>> {
+    let transport = WebSocket::new(url).await?;
+    Ok(Web3::new(transport))
 }

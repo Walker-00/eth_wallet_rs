@@ -1,30 +1,26 @@
 mod eth_wallet;
 mod utils;
+use crate::eth_wallet::{connect_web3, Wallet};
 use anyhow::Result;
-use eth_wallet::gen_key;
-
-use crate::eth_wallet::{pub_key_addr, Wallet};
+use dotenvy::{dotenv, var};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let (sec_key, pub_key) = gen_key();
+    dotenv().expect("Error due to: .env File not found");
 
-    println!(
-        "sec_key:    {}\npub_key:    {}",
-        sec_key.display_secret(),
-        pub_key.to_string()
-    );
-
-    let pub_addr = pub_key_addr(&pub_key);
-
-    print!("addr:    {:?}", pub_addr);
-
-    let wallet = Wallet::new(&sec_key, &pub_key);
-    println!("{:?}", wallet);
     let path = "wallet.json";
-    wallet.save_as_file(path)?;
 
-    Wallet::load_file(path)?;
+    let wallet_load = Wallet::load_file(path)?;
+
+    let url = var("NET_URL")?;
+
+    let web3_conc = connect_web3(&url).await?;
+
+    let blk_num = web3_conc.eth().block_number().await?;
+    println!("block_number: {}", &blk_num);
+
+    let blc = wallet_load.get_balance(&web3_conc).await?;
+    println!("wallet balance: {}", &blc);
 
     Ok(())
 }

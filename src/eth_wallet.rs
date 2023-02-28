@@ -1,3 +1,6 @@
+use std::{fs::OpenOptions, io::BufWriter};
+
+use anyhow::Result;
 use secp256k1::{
     rand::{rngs::StdRng, SeedableRng},
     PublicKey, Secp256k1, SecretKey,
@@ -35,5 +38,13 @@ impl Wallet {
             public_key: pub_key.to_string(),
             public_addr: format!("{:?}", addr),
         }
+    }
+
+    pub async fn save_as_file(&self, path: &str) -> Result<()> {
+        let file = OpenOptions::new().write(true).create(true).open(path)?;
+        let writer = BufWriter::new(file);
+
+        serde_json::to_writer_pretty(writer, self)?;
+        Ok(())
     }
 }

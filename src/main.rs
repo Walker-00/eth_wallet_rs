@@ -1,9 +1,11 @@
 mod eth_wallet;
+use anyhow::Result;
 use eth_wallet::gen_key;
 
 use crate::eth_wallet::{pub_key_addr, Wallet};
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<()> {
     let (sec_key, pub_key) = gen_key();
 
     println!(
@@ -17,5 +19,8 @@ fn main() {
     print!("addr:    {:?}", pub_addr);
 
     let wallet = Wallet::new(&sec_key, &pub_key);
-    println!("{:?}", wallet)
+    println!("{:?}", wallet);
+    wallet.save_as_file("wallet.json").await?;
+
+    Ok(())
 }

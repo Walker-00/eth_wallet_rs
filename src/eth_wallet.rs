@@ -17,7 +17,7 @@ use web3::{
     Web3,
 };
 
-use crate::utils::gen_systime;
+use crate::utils::{gen_systime, to_eth};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Wallet {
@@ -81,6 +81,11 @@ impl Wallet {
         let wallet_addr = Address::from_str(&self.public_addr)?;
         let balance = web3_conc.eth().balance(wallet_addr, None).await?;
         Ok(balance)
+    }
+
+    pub async fn get_balance_as_eth(&self, web3_conc: &Web3<WebSocket>) -> Result<f64> {
+        let val = self.get_balance(web3_conc).await?;
+        Ok(to_eth(val))
     }
 }
 

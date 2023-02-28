@@ -22,5 +22,8 @@ async fn main() -> Result<()> {
     let blc = wallet_load.get_balance(&web3_conc).await?;
     println!("wallet balance: {}", &blc);
 
+    let eblc = wallet_load.get_balance_as_eth(&web3_conc).await?;
+    println!("ETH balance: {}", &eblc);
+
     Ok(())
 }

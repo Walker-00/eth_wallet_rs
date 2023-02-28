@@ -13,3 +13,10 @@ pub fn to_eth(val: U256) -> f64 {
 
     resl / 1_000_000_000_000_000_000.0
 }
+
+pub fn to_wei(val: f64) -> U256 {
+    let resl = val * 1_000_000_000_000_000_000.0;
+    let resl = resl as u128;
+
+    U256::from(resl)
+}

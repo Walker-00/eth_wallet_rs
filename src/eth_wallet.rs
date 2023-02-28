@@ -11,13 +11,13 @@ use secp256k1::{
 };
 use serde::{Deserialize, Serialize};
 use web3::{
-    signing::keccak256,
+    signing::{keccak256, SecretKey, SecretKeyRef},
     transports::WebSocket,
-    types::{Address, U256},
+    types::{Address, TransactionParameters, H256, U256},
     Web3,
 };
 
-use crate::utils::{gen_systime, to_eth};
+use crate::utils::{gen_systime, to_eth, to_wei};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Wallet {
@@ -87,9 +87,31 @@ impl Wallet {
         let val = self.get_balance(web3_conc).await?;
         Ok(to_eth(val))
     }
+
+    pub async fn sign_send(
+        web3_conc: &Web3<WebSocket>,
+        transc: TransactionParameters,
+        sec_key: web3::signing::SecretKey,
+    ) -> Result<H256> {
+        let signed = web3_conc.accounts().sign_transaction(transc).await?;
+
+        let tranc_resl = web3_conc
+            .eth()
+            .send_raw_transaction(signed.raw_transaction)
+            .await?;
+        Ok(tranc_resl)
+    }
 }
 
 pub async fn connect_web3(url: &str) -> Result<Web3<WebSocket>> {
     let transport = WebSocket::new(url).await?;
     Ok(Web3::new(transport))
+}
+
+pub fn send_eth(addr: Address, valu: f64) -> TransactionParameters {
+    TransactionParameters {
+        to: Some(addr),
+        value: to_wei(valu),
+        ..Default::default()
+    }
 }
